@@ -15,6 +15,7 @@ static inline void aligned_free(void *p) {
     _aligned_free(p);
 }
 #else
+#define _POSIX_C_SOURCE 200809L
 #include <stdlib.h>
 static inline void *aligned_malloc(size_t size, size_t alignment)
 {
