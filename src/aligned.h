@@ -15,14 +15,22 @@ static inline void aligned_free(void *p) {
     _aligned_free(p);
 }
 #else
-#define _POSIX_C_SOURCE 200809L
 #include <stdlib.h>
+#if defined(_ISOC11_SOURCE)
+static inline void *aligned_malloc(size_t size, size_t alignment) {
+    return aligned_alloc(alignment, size);
+}
+#else
+#if !defined(_POSIX_C_SOURCE)
+#define _POSIX_C_SOURCE 200809L
+#endif
 static inline void *aligned_malloc(size_t size, size_t alignment)
 {
     void *p;
     int ret = posix_memalign(&p, alignment, size);
     return (ret == 0) ? p : NULL;
 }
+#endif
 static inline void *aligned_resize(void *p, size_t old_size, size_t new_size, size_t alignment)
 {
     if ((alignment == 0) || ((alignment & (alignment - 1)) != 0) || (alignment < sizeof(void *))) {

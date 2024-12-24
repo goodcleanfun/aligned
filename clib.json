@@ -5,6 +5,12 @@
     "description": "Aligned memory management for vectorization",
     "keywords": ["aligned", "memory", "vectorization"],
     "license": "MIT",
+    "dependencies": {
+      "goodcleanfun/array": "*"
+    },
+    "development": {
+      "silentbicycle/greatest": "*"
+    },
     "src": [
         "src/aligned.h"
     ]    
