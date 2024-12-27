@@ -12,6 +12,7 @@
       "silentbicycle/greatest": "*"
     },
     "src": [
-        "src/aligned.h"
+        "src/aligned.h",
+        "src/aligned_array.h"
     ]    
   }
