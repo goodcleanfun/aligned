@@ -78,8 +78,19 @@ static inline void aligned_free(void *p)
 #endif
 #endif
 
+
 #ifndef DEFAULT_ALIGNMENT
-#define DEFAULT_ALIGNMENT (POINTER_SIZE)
+#if defined(__AVX512F__)
+    #define DEFAULT_ALIGNMENT 64
+#elif defined(__AVX__)
+    #define DEFAULT_ALIGNMENT 32
+#elif defined(__SSE__)
+    #define DEFAULT_ALIGNMENT 16
+#elif defined(__ARM_NEON) || defined(__ARM_NEON__)
+    #define DEFAULT_ALIGNMENT 16
+#else
+    #define DEFAULT_ALIGNMENT 16
+#endif
 #endif
 
 #if (DEFAULT_ALIGNMENT) <= 0
@@ -93,6 +104,8 @@ static inline void aligned_free(void *p)
      || ((UINTPTR_MAX == 0xFFFF) && ((DEFAULT_ALIGNMENT) < 2)))
 #error "DEFAULT_ALIGNMENT must be at least the size of a pointer"
 #endif
+
+#undef POINTER_SIZE
 
 static void *default_aligned_malloc(size_t size) {
     return aligned_malloc(size, DEFAULT_ALIGNMENT);
