@@ -8,7 +8,16 @@
 #endif
 
 #ifndef ALIGNMENT
-#error "Must define ALIGNMENT"
+#if ((UINTPTR_MAX == 0xFFFFFFFFFFFFFFFFu))
+#define ALIGNMENT 64
+#elif ((UINTPTR_MAX == 0xFFFFFFFF))
+#define ALIGNMENT 32
+#elif ((UINTPTR_MAX == 0xFFFF))
+#define ALIGNMENT 16
+#else
+#error "Unknown pointer size"
+#endif
+#define ALIGNMENT_DEFINED
 #endif
 
 #if (ALIGNMENT) <= 0
@@ -35,3 +44,7 @@
 #undef ARRAY_REALLOC_NEEDS_PREV_SIZE
 #undef ARRAY_REALLOC
 #undef ARRAY_FREE
+#ifdef ALIGNMENT_DEFINED
+#undef ALIGNMENT
+#undef ALIGNMENT_DEFINED
+#endif
