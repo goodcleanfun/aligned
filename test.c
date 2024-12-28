@@ -4,7 +4,7 @@
 #define ARRAY_NAME test_array
 #define ARRAY_TYPE int32_t
 #define DEFAULT_ARRAY_SIZE 8
-#define ALIGNMENT 64
+#define ARRAY_ALIGNMENT 16
 #include "aligned_array.h"
 #undef ARRAY_NAME
 #undef ARRAY_TYPE

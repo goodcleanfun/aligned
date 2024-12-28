@@ -1,6 +1,7 @@
 #ifndef ALIGNED_H
 #define ALIGNED_H
 
+#include <stdint.h>
 #include <stddef.h>
 
 #if defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__)
@@ -62,5 +63,47 @@ static inline void aligned_free(void *p)
 #else
 #define MIE_ALIGN(x) __attribute__((aligned(x)))
 #endif
+
+
+
+#if !defined(POINTER_SIZE)
+#if ((UINTPTR_MAX == 0xFFFFFFFFFFFFFFFFu))
+#define POINTER_SIZE 8
+#elif ((UINTPTR_MAX == 0xFFFFFFFF))
+#define POINTER_SIZE 4
+#elif ((UINTPTR_MAX == 0xFFFF))
+#define POINTER_SIZE 2
+#else
+#error "Unknown pointer size"
+#endif
+#endif
+
+#ifndef DEFAULT_ALIGNMENT
+#define DEFAULT_ALIGNMENT (POINTER_SIZE)
+#endif
+
+#if (DEFAULT_ALIGNMENT) <= 0
+#error "DEFAULT_ALIGNMENT must be greater than 0"
+#endif
+#if ((DEFAULT_ALIGNMENT) & ((DEFAULT_ALIGNMENT) - 1)) != 0
+#error "DEFAULT_ALIGNMENT must be a power of 2"
+#endif
+#if (((UINTPTR_MAX == 0xFFFFFFFFFFFFFFFFu) && ((DEFAULT_ALIGNMENT) < 8)) \
+     || ((UINTPTR_MAX == 0xFFFFFFFF) && ((DEFAULT_ALIGNMENT) < 4)) \
+     || ((UINTPTR_MAX == 0xFFFF) && ((DEFAULT_ALIGNMENT) < 2)))
+#error "DEFAULT_ALIGNMENT must be at least the size of a pointer"
+#endif
+
+static void *default_aligned_malloc(size_t size) {
+    return aligned_malloc(size, DEFAULT_ALIGNMENT);
+}
+
+static void *default_aligned_resize(void *p, size_t old_size, size_t new_size) {
+    return aligned_resize(p, old_size, new_size, DEFAULT_ALIGNMENT);
+}
+
+static void default_aligned_free(void *p) {
+    aligned_free(p);
+}
 
 #endif // ALIGNED_H

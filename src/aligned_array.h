@@ -7,44 +7,46 @@
 
 #endif
 
-#ifndef ALIGNMENT
-#if ((UINTPTR_MAX == 0xFFFFFFFFFFFFFFFFu))
-#define ALIGNMENT 64
-#elif ((UINTPTR_MAX == 0xFFFFFFFF))
-#define ALIGNMENT 32
-#elif ((UINTPTR_MAX == 0xFFFF))
-#define ALIGNMENT 16
+#ifndef ARRAY_MALLOC
+#define ARRAY_MALLOC_DEFINED
+#ifndef ARRAY_ALIGNMENT
+#define ARRAY_MALLOC(size) default_aligned_malloc(size)
 #else
-#error "Unknown pointer size"
+#define ARRAY_MALLOC(size) aligned_malloc(size, ARRAY_ALIGNMENT)
 #endif
-#define ALIGNMENT_DEFINED
 #endif
 
-#if (ALIGNMENT) <= 0
-#error "ALIGNMENT must be greater than 0"
-#endif
-#if ((ALIGNMENT) & ((ALIGNMENT) - 1)) != 0
-#error "ALIGNMENT must be a power of 2"
-#endif
-#if (((UINTPTR_MAX == 0xFFFFFFFFFFFFFFFFu) && ((ALIGNMENT) < 64)) \
-     || ((UINTPTR_MAX == 0xFFFFFFFF) && ((ALIGNMENT) < 32)) \
-     || ((UINTPTR_MAX == 0xFFFF) && ((ALIGNMENT) < 16)))
-#error "ALIGNMENT must be at least the size of a pointer"
-#endif
-#undef POINTER_SIZE
-
-#define ARRAY_MALLOC(size) aligned_malloc(size, ALIGNMENT)
 #define ARRAY_REALLOC_NEEDS_PREV_SIZE
-#define ARRAY_REALLOC(a, prev_size, new_size) aligned_resize((a), (prev_size), (new_size), ALIGNMENT)
-#define ARRAY_FREE aligned_free
+
+#ifndef ARRAY_REALLOC
+#define ARRAY_REALLOC_DEFINED
+#ifndef ARRAY_ALIGNMENT
+#define ARRAY_REALLOC(a, prev_size, new_size) default_aligned_resize(a, prev_size, new_size)
+#else
+#define ARRAY_REALLOC(a, prev_size, new_size) aligned_resize(a, prev_size, new_size, ARRAY_ALIGNMENT)
+#endif
+#endif
+
+#ifndef ARRAY_FREE
+#define ARRAY_FREE_DEFINED
+#define ARRAY_FREE(a) default_aligned_free(a)
+#endif
 
 #include "array/array.h"
 
+#ifdef ARRAY_MALLOC_DEFINED
 #undef ARRAY_MALLOC
+#undef ARRAY_MALLOC_DEFINED
+#endif
+
 #undef ARRAY_REALLOC_NEEDS_PREV_SIZE
+
+#ifdef ARRAY_REALLOC_DEFINED
 #undef ARRAY_REALLOC
+#undef ARRAY_REALLOC_DEFINED
+#endif
+
+#ifdef ARRAY_FREE_DEFINED
 #undef ARRAY_FREE
-#ifdef ALIGNMENT_DEFINED
-#undef ALIGNMENT
-#undef ALIGNMENT_DEFINED
+#undef ARRAY_FREE_DEFINED
 #endif
