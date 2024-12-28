@@ -65,6 +65,40 @@ static inline void aligned_free(void *p)
 #endif
 
 
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN_DEFINED
+#include <windows.h>
+#ifdef WIN32_LEAN_AND_MEAN_DEFINED
+#undef WIN32_LEAN_AND_MEAN
+#undef WIN32_LEAN_AND_MEAN_DEFINED
+#endif
+#endif
+#else
+#include <unistd.h>
+#endif
+
+#define DEFAULT_PAGE_SIZE 4096
+
+static inline long get_page_size() {
+    static long page_size = 0;
+    if (page_size == 0) {
+    #ifdef _WIN32
+        SYSTEM_INFO si;
+        GetSystemInfo(&si);
+        page_size = (long)si.dwPageSize;
+    #else
+        page_size = sysconf(_SC_PAGESIZE);
+        if (page_size == -1) {
+            fprintf(stderr, "Warning: could not deterimint system page size. Using default value: %d bytes\n", DEFAULT_PAGE_SIZE);
+            page_size = DEFAULT_PAGE_SIZE;
+        }
+
+    #endif
+    }
+    return page_size;
+}
 
 #if !defined(POINTER_SIZE)
 #if ((UINTPTR_MAX == 0xFFFFFFFFFFFFFFFFu))
@@ -118,5 +152,25 @@ static void *default_aligned_resize(void *p, size_t old_size, size_t new_size) {
 static void default_aligned_free(void *p) {
     aligned_free(p);
 }
+
+#define page_padding(size, page_size) ((size + page_size - 1) & ~(page_size - 1))
+
+static void *page_aligned_malloc(size_t size) {
+    long page_size = get_page_size();
+    size_t aligned_size = page_padding(size, page_size);
+    return aligned_malloc(aligned_size, page_size);
+}
+
+static void *page_aligned_resize(void *p, size_t old_size, size_t new_size) {
+    long page_size = get_page_size();
+    size_t aligned_old_size = page_padding(old_size, page_size);
+    size_t aligned_new_size = page_padding(new_size, page_size);
+    return aligned_resize(p, aligned_old_size, aligned_new_size, page_size);
+}
+
+static void page_aligned_free(void *p) {
+    aligned_free(p);
+}
+
 
 #endif // ALIGNED_H
