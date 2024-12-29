@@ -133,9 +133,7 @@ static inline long get_page_size() {
 #if ((DEFAULT_ALIGNMENT) & ((DEFAULT_ALIGNMENT) - 1)) != 0
 #error "DEFAULT_ALIGNMENT must be a power of 2"
 #endif
-#if (((UINTPTR_MAX == 0xFFFFFFFFFFFFFFFFu) && ((DEFAULT_ALIGNMENT) < 8)) \
-     || ((UINTPTR_MAX == 0xFFFFFFFF) && ((DEFAULT_ALIGNMENT) < 4)) \
-     || ((UINTPTR_MAX == 0xFFFF) && ((DEFAULT_ALIGNMENT) < 2)))
+#if ((DEFAULT_ALIGNMENT) < (POINTER_SIZE))
 #error "DEFAULT_ALIGNMENT must be at least the size of a pointer"
 #endif
 
