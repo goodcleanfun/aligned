@@ -1,6 +1,7 @@
 #ifndef ALIGNED_H
 #define ALIGNED_H
 
+#include <stdlib.h>
 #include <stdint.h>
 #include <stddef.h>
 
@@ -16,7 +17,7 @@ static inline void aligned_free(void *p) {
     _aligned_free(p);
 }
 #else
-#include <stdlib.h>
+#include <string.h>
 #if defined(_ISOC11_SOURCE)
 static inline void *aligned_malloc(size_t size, size_t alignment) {
     return aligned_alloc(alignment, size);
