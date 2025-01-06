@@ -8,12 +8,32 @@
 #include "aligned_array.h"
 #undef ARRAY_NAME
 #undef ARRAY_TYPE
+#undef ARRAY_ALIGNMENT
+
+#define ARRAY_NAME page_array
+#define ARRAY_TYPE int32_t
+#define DEFAULT_ARRAY_SIZE 8
+#define ARRAY_MALLOC page_aligned_malloc
+#define ARRAY_REALLOC page_aligned_resize
+#define ARRAY_FREE page_aligned_free
+#include "aligned_array.h"
+#undef ARRAY_NAME
+#undef ARRAY_TYPE
+#undef ARRAY_MALLOC
+#undef ARRAY_REALLOC
+#undef ARRAY_FREE
+
 
 TEST test_array_resizing(void) {
     test_array *v = test_array_new();
     ASSERT_EQ(v->m, DEFAULT_ARRAY_SIZE);
     ASSERT(test_array_empty(v));
     ASSERT_EQ(v->n, 0);
+
+    page_array *p = page_array_new();
+    ASSERT_EQ(p->m, DEFAULT_ARRAY_SIZE);
+    ASSERT(page_array_empty(p));
+    ASSERT_EQ(p->n, 0);
 
     for (int32_t i = 0; i < 10; i++) {
         test_array_push(v, i);
