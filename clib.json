@@ -2,17 +2,13 @@
     "name": "aligned",
     "version": "0.4.3",
     "repo": "goodcleanfun/aligned",
-    "description": "Aligned memory management for vectorization",
+    "description": "Cross-platform memory alignment",
     "keywords": ["aligned", "memory", "vectorization"],
     "license": "MIT",
-    "dependencies": {
-      "goodcleanfun/array": "*"
-    },
     "development": {
       "silentbicycle/greatest": "*"
     },
     "src": [
-        "src/aligned.h",
-        "src/aligned_array.h"
+        "src/aligned.h"
     ]    
   }

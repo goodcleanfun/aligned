@@ -54,7 +54,7 @@ jobs:
           make CC=${{ matrix.compiler }}
           sudo make install
       - name: Run tests with ${{ matrix.compiler }}
-        run: make CC=${{ matrix.compiler }} install test
+        run: make CC=${{ matrix.compiler }} CFLAGS="-std=c11" install test
 
   test-windows:
     runs-on: windows-latest
@@ -65,14 +65,12 @@ jobs:
         run: |
           choco install make
           choco install curl
-      - name: Install greatest
+      - name: Download clib deps
         run: |
-          mkdir -p deps\array
-          curl -L https://github.com/goodcleanfun/array/raw/main/src/array.h -o deps\array\array.h
           mkdir -p deps\greatest
           curl -L https://github.com/silentbicycle/greatest/raw/release/greatest.h -o deps\greatest\greatest.h
       - name: Run tests with MSVC
-        run: make CC=cl test
+        run: make CC=cl CFLAGS="/std:c11" test
 
   test-windows-mingw:
     runs-on: windows-latest
@@ -87,12 +85,10 @@ jobs:
       - name: Install curl
         run: |
           choco install curl -y
-      - name: Download greatest.h
+      - name: Download clib deps
         run: |
-          mkdir -p deps/array
-          curl -L https://github.com/goodcleanfun/array/raw/main/src/array.h -o deps/array/array.h
           mkdir -p deps/greatest
           curl -L https://github.com/silentbicycle/greatest/raw/release/greatest.h -o deps/greatest/greatest.h
       - name: Build and Test with MinGW
         run: |
-          make CC=gcc test
+          make CC=gcc CFLAGS="-std=c11" test
