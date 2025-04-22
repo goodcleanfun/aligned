@@ -5,6 +5,19 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#define CACHE_LINE_SIZE 64
+
+#if defined(__has_include) && __has_include(<stdalign.h>)
+#include <stdalign.h>
+#else
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) && (__STDC_VERSION__ < 202311L)
+#define alignas _Alignas
+#define alignof _Alignof
+#define __alignas_is_defined 1
+#define __alignof_is_defined 1
+#endif
+#endif
+
 #if defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__)
 #include <malloc.h>
 static inline void *aligned_malloc(size_t size, size_t alignment) {
@@ -150,6 +163,14 @@ static void *default_aligned_resize(void *p, size_t old_size, size_t new_size) {
 
 static void default_aligned_free(void *p) {
     aligned_free(p);
+}
+
+static void *cache_line_aligned_malloc(size_t size) {
+    return aligned_malloc(size, CACHE_LINE_SIZE);
+}
+
+static void *cache_line_aligned_resize(void *p, size_t old_size, size_t new_size) {
+    return aligned_resize(p, old_size, new_size, CACHE_LINE_SIZE);
 }
 
 #define page_padding(size, page_size) ((size + page_size - 1) & ~(page_size - 1))
