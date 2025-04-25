@@ -5,7 +5,13 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#ifndef CACHE_LINE_SIZE
+#if defined(__aarch64__) && defined(__APPLE__)
+#define CACHE_LINE_SIZE 128
+#else
 #define CACHE_LINE_SIZE 64
+#endif
+#endif
 
 #if defined(__has_include) && __has_include(<stdalign.h>)
 #include <stdalign.h>
