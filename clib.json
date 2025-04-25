@@ -1,6 +1,6 @@
 {
     "name": "aligned",
-    "version": "0.6.0",
+    "version": "0.6.1",
     "repo": "goodcleanfun/aligned",
     "description": "Cross-platform memory alignment",
     "keywords": ["aligned", "memory", "vectorization"],
