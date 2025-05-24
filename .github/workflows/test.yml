@@ -65,12 +65,10 @@ jobs:
         run: |
           choco install make
           choco install curl
-          choco install gzip
-          curl -L https://github.com/clibs/clib/releases/download/2.8.3/clib-win-2.8.3.zip -o clib-win-2.8.3.zip
-          unzip clib-win-2.8.3.zip
       - name: Download clib deps
         run: |
-          clib-win\clib-install.exe --dev --concurrency 1
+          mkdir -p deps\greatest
+          curl -L https://github.com/silentbicycle/greatest/raw/release/greatest.h -o deps\greatest\greatest.h
       - name: Run tests with MSVC
         run: make CC=cl CFLAGS="/std:c11" test
 
