@@ -111,7 +111,6 @@ static inline long get_page_size() {
     #else
         page_size = sysconf(_SC_PAGESIZE);
         if (page_size == -1) {
-            fprintf(stderr, "Warning: could not deterimint system page size. Using default value: %d bytes\n", DEFAULT_PAGE_SIZE);
             page_size = DEFAULT_PAGE_SIZE;
         }
 
